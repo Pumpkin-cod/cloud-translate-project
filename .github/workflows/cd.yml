@@ -1,0 +1,49 @@
+name: CD
+
+on:
+  push:
+    branches: [ main ]   # Deploy automatically when code is merged into main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # Needed for OIDC authentication
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::282011215016:role/GitHubOIDCRole   # 👈 Your account ID included
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform -chdir=infra init
+
+      - name: Terraform Plan
+        run: terraform -chdir=infra plan
+
+      - name: Terraform Apply
+        run: terraform -chdir=infra apply -auto-approve
+
+      - name: Package Lambda
+        run: |
+          cd lambda
+          zip -r ../lambda_package.zip .
+
+      - name: Update Lambda Function
+        run: |
+          if aws lambda get-function --function-name translate-handler >/dev/null 2>&1; then
+            aws lambda update-function-code \
+              --function-name translate-handler \
+              --zip-file fileb://lambda_package.zip
+          else
+            echo "Lambda function translate-handler not found"
+            exit 1
+          fi

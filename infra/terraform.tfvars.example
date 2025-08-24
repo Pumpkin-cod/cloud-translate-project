@@ -1,0 +1,14 @@
+# Copy this file to terraform.tfvars and fill in your values
+
+# Required variables
+billing_alert_email = "your-email@example.com"
+github_owner        = "your-github-username"
+github_repo         = "cloud-translate-project"
+
+# Optional overrides
+# aws_region = "us-east-1"
+# project_name = "cloud-translate-project"
+# environment = "dev"
+# requests_bucket_name = "ctp-requests-us-east-1"
+# responses_bucket_name = "ctp-responses-us-east-1"
+# enable_admin_attachment = true
