@@ -31,6 +31,6 @@ jobs:
           python-version: "3.12"
       - name: Install deps
         run: |
-          pip install pytest boto3 moto
+          pip install pytest boto3 moto[s3,translate]
       - name: Run pytest
         run: pytest -v tests/
