@@ -5,12 +5,11 @@ import pytest
 from unittest.mock import Mock
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'lambda'))
 
-from moto import mock_s3, mock_translate
+from moto import mock_aws
 import boto3
 from handler import lambda_handler
 
-@mock_s3
-@mock_translate
+@mock_aws
 def test_successful_translation():
     # Setup mock AWS services
     s3 = boto3.client('s3', region_name='us-east-1')
@@ -81,7 +80,7 @@ def test_api_gateway_event():
     }
     context = Mock()
     
-    with mock_s3(), mock_translate():
+    with mock_aws():
         s3 = boto3.client('s3', region_name='us-east-1')
         s3.create_bucket(Bucket='test-requests')
         s3.create_bucket(Bucket='test-responses')
