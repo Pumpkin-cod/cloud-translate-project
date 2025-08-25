@@ -7,9 +7,6 @@ from datetime import datetime, timezone
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
-s3 = boto3.client("s3")
-translate = boto3.client("translate")
-
 REQUESTS_BUCKET = os.environ.get("REQUESTS_BUCKET")
 RESPONSES_BUCKET = os.environ.get("RESPONSES_BUCKET")
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
@@ -99,6 +96,7 @@ def _validate_event(event):
     }
 
 def _s3_put_json(bucket: str, key: str, obj: dict):
+    s3 = boto3.client("s3")
     s3.put_object(
         Bucket=bucket,
         Key=key,
@@ -139,6 +137,7 @@ def lambda_handler(event, context):
         )
 
         # Translate each sentence
+        translate = boto3.client("translate")
         translations = []
         for text in parsed["texts"]:
             # Amazon Translate API call
