@@ -37,13 +37,21 @@ jobs:
           cd lambda
           zip -r ../lambda_package.zip .
 
+      - name: Get Lambda Function Name
+        id: lambda-name
+        run: |
+          LAMBDA_NAME=$(terraform -chdir=infra output -raw lambda_function_name)
+          echo "lambda_name=$LAMBDA_NAME" >> $GITHUB_OUTPUT
+
       - name: Update Lambda Function
         run: |
-          if aws lambda get-function --function-name translate-handler >/dev/null 2>&1; then
+          LAMBDA_NAME="${{ steps.lambda-name.outputs.lambda_name }}"
+          if aws lambda get-function --function-name "$LAMBDA_NAME" >/dev/null 2>&1; then
             aws lambda update-function-code \
-              --function-name translate-handler \
+              --function-name "$LAMBDA_NAME" \
               --zip-file fileb://lambda_package.zip
+            echo "Updated Lambda function: $LAMBDA_NAME"
           else
-            echo "Lambda function translate-handler not found"
+            echo "Lambda function $LAMBDA_NAME not found"
             exit 1
           fi
