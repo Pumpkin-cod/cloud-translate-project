@@ -277,8 +277,12 @@
                     throw new Error(result.message || 'Translation failed');
                 }
                 
-                // Get the actual translation results from S3
-                await fetchTranslationResults(result.responsesBucket, result.outputKey);
+                // Display the real translation results
+                if (result.translations && result.translations.length > 0) {
+                    showResults(result.translations);
+                } else {
+                    showError('No translations received from the API.');
+                }
                 
             } catch (error) {
                 console.error('Translation error:', error);
@@ -289,63 +293,7 @@
             }
         });
         
-        async function fetchTranslationResults(bucket, key) {
-            // For demo purposes, we'll simulate the translation results
-            // In a real app, you'd fetch from S3 or have the Lambda return results directly
-            const sourceLanguage = document.getElementById('sourceLanguage').value;
-            const targetLanguage = document.getElementById('targetLanguage').value;
-            const textInput = document.getElementById('textInput').value.trim();
-            
-            // Simulate translation results
-            const mockTranslations = [
-                {
-                    source: textInput,
-                    translated: await getMockTranslation(textInput, targetLanguage),
-                    sourceLang: sourceLanguage,
-                    targetLang: targetLanguage
-                }
-            ];
-            
-            showResults(mockTranslations);
-        }
-        
-        async function getMockTranslation(text, targetLang) {
-            // Simple mock translations for demo
-            const translations = {
-                'fr': {
-                    'hello': 'bonjour',
-                    'world': 'monde',
-                    'how are you': 'comment allez-vous',
-                    'good morning': 'bonjour',
-                    'thank you': 'merci'
-                },
-                'es': {
-                    'hello': 'hola',
-                    'world': 'mundo',
-                    'how are you': 'cómo estás',
-                    'good morning': 'buenos días',
-                    'thank you': 'gracias'
-                },
-                'de': {
-                    'hello': 'hallo',
-                    'world': 'welt',
-                    'how are you': 'wie geht es dir',
-                    'good morning': 'guten morgen',
-                    'thank you': 'danke'
-                }
-            };
-            
-            const lowerText = text.toLowerCase();
-            const langTranslations = translations[targetLang] || {};
-            
-            for (const [key, value] of Object.entries(langTranslations)) {
-                if (lowerText.includes(key)) {
-                    return text.toLowerCase().replace(key, value);
-                }
-            }
-            
-            return `[Translated to ${targetLang}] ${text}`;
-        }
+        // Translation results are now included directly in the API response
         
         function showResults(translations) {
             const resultDiv = document.getElementById('resultDiv');

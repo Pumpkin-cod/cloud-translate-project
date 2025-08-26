@@ -173,13 +173,17 @@ def lambda_handler(event, context):
         _emit_emf_metrics("Success", 1, {"Stage": os.environ.get("ENV", "dev")})
         _emit_emf_metrics("DurationMs", duration_ms, {"Stage": os.environ.get("ENV", "dev")})
 
-        # HTTP 200 response to client
+        # HTTP 200 response to client with translation results
         return _response(
             200,
             {
                 "jobId": job_id,
                 "outputKey": out_key,
                 "responsesBucket": RESPONSES_BUCKET,
+                "translations": translations,  # Include actual translations
+                "source_lang": parsed["source_lang"],
+                "target_lang": parsed["target_lang"],
+                "count": len(translations)
             },
         )
 
