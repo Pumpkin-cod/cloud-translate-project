@@ -139,27 +139,6 @@ python3 -m http.server 8000
 - **CI**: Runs on all branches - Terraform validation + Python tests
 - **CD**: Runs on main branch - Deploys infrastructure + updates Lambda
 
-## 🔧 Configuration
-
-### Required Variables (terraform.tfvars)
-```hcl
-billing_alert_email = "your-email@example.com"
-github_owner        = "your-github-username"
-github_repo         = "cloud-translate-project"
-```
-
-### Optional Variables
-```hcl
-aws_region              = "us-east-1"
-project_name            = "cloud-translate-project"
-environment             = "dev"
-requests_bucket_name    = "ctp-requests-us-east-1"
-responses_bucket_name   = "ctp-responses-us-east-1"
-lambda_memory_mb        = 512
-lambda_timeout_s        = 10
-log_retention_days      = 14
-enable_admin_attachment = true
-```
 
 ## 📊 Monitoring & Observability
 
