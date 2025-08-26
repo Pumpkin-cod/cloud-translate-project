@@ -2,6 +2,15 @@ resource "aws_apigatewayv2_api" "http_api" {
   name          = "${var.project_name}-${var.environment}-api"
   protocol_type = "HTTP"
   tags          = var.tags
+  
+  cors_configuration {
+    allow_credentials = false
+    allow_headers     = ["content-type", "x-amz-date", "authorization", "x-api-key"]
+    allow_methods     = ["*"]
+    allow_origins     = ["*"]
+    expose_headers    = ["date", "keep-alive"]
+    max_age          = 86400
+  }
 }
 
 resource "aws_apigatewayv2_integration" "lambda_integration" {
