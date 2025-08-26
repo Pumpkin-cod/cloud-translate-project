@@ -41,7 +41,7 @@ A production-ready, serverless translation service built with AWS services, feat
 
 | **S3 Storage** | **Cost Management** |
 |:---:|:---:|
-| ![S3 Buckets](docs/images/s3-buckets.png) | ![Billing Costs](docs/images/billing-costs.png) |
+| ![S3 Buckets](docs/images/s3-bucket.png) | ![Billing Costs](docs/images/billing-costs.png) |
 | *Organized data storage with encryption* | *Cost-effective serverless architecture* |
 
 </div>
