@@ -9,34 +9,36 @@ from moto import mock_aws
 import boto3
 from handler import lambda_handler
 
-@mock_aws
 def test_successful_translation():
-    # Setup mock AWS services
-    s3 = boto3.client('s3', region_name='us-east-1')
-    s3.create_bucket(Bucket='test-requests')
-    s3.create_bucket(Bucket='test-responses')
-    
     # Mock environment variables
     os.environ['REQUESTS_BUCKET'] = 'test-requests'
     os.environ['RESPONSES_BUCKET'] = 'test-responses'
     
-    # Test event
-    event = {
-        "source_lang": "en",
-        "target_lang": "fr",
-        "texts": ["Hello", "World"]
-    }
-    
-    context = Mock()
-    context.aws_request_id = "test-request-id"
-    
-    response = lambda_handler(event, context)
-    
-    assert response['statusCode'] == 200
-    body = json.loads(response['body'])
-    assert 'jobId' in body
-    assert 'outputKey' in body
-    assert body['responsesBucket'] == 'test-responses'
+    with mock_aws():
+        # Setup mock AWS services
+        s3 = boto3.client('s3', region_name='us-east-1')
+        s3.create_bucket(Bucket='test-requests')
+        s3.create_bucket(Bucket='test-responses')
+        
+        # Test event
+        event = {
+            "source_lang": "en",
+            "target_lang": "fr",
+            "texts": ["Hello", "World"]
+        }
+        
+        context = Mock()
+        context.aws_request_id = "test-request-id"
+        
+        response = lambda_handler(event, context)
+        
+        if response['statusCode'] != 200:
+            print(f"Error response: {response}")
+        assert response['statusCode'] == 200
+        body = json.loads(response['body'])
+        assert 'jobId' in body
+        assert 'outputKey' in body
+        assert body['responsesBucket'] == 'test-responses'
 
 def test_missing_environment_variables():
     # Clear environment variables
@@ -62,6 +64,8 @@ def test_invalid_input():
     
     response = lambda_handler(event, context)
     
+    if response['statusCode'] != 400:
+        print(f"Error response: {response}")
     assert response['statusCode'] == 400
     body = json.loads(response['body'])
     assert body['error'] == 'BadRequest'
@@ -87,4 +91,6 @@ def test_api_gateway_event():
         
         response = lambda_handler(event, context)
         
+        if response['statusCode'] != 200:
+            print(f"Error response: {response}")
         assert response['statusCode'] == 200
