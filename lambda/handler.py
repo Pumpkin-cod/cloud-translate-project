@@ -7,10 +7,6 @@ from datetime import datetime, timezone
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
-REQUESTS_BUCKET = os.environ.get("REQUESTS_BUCKET")
-RESPONSES_BUCKET = os.environ.get("RESPONSES_BUCKET")
-AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
-
 # -------- Helpers --------
 
 class BadRequest(Exception):
@@ -112,6 +108,10 @@ def lambda_handler(event, context):
     req_id = getattr(context, "aws_request_id", str(uuid.uuid4()))
 
     try:
+        REQUESTS_BUCKET = os.environ.get("REQUESTS_BUCKET")
+        RESPONSES_BUCKET = os.environ.get("RESPONSES_BUCKET")
+        AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
+        
         if not REQUESTS_BUCKET or not RESPONSES_BUCKET:
             raise RuntimeError("Missing env vars: REQUESTS_BUCKET/RESPONSES_BUCKET.")
 
